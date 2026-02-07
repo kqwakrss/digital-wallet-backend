@@ -9,14 +9,14 @@ import jakarta.validation.constraints.Positive;
 public class TransferRequest {
     
     @NotNull
-    private Long fromUserId;
+    private final Long fromUserId;
     @NotNull
-    private Long toUserId;
+    private final Long toUserId;
 
     @NotNull
     @Positive
     @DecimalMin(value = "0.01")
-    private BigDecimal amount;
+    private final BigDecimal amount;
 
     public Long GetFromUserId(){
         return fromUserId;
