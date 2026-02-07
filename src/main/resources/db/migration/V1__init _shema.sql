@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 CREATE TABLE wallet (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL,і
+    user_id BIGINT NOT NULL,
     balance NUMERIC(19, 2) NOT NULL,
     CONSTRAINT fk_wallet_user
         FOREIGN KEY (user_id)
