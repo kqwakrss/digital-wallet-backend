@@ -5,7 +5,7 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
-CREATE TABLE wallet (
+CREATE TABLE wallets (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     balance NUMERIC(19, 2) NOT NULL,
@@ -18,6 +18,7 @@ CREATE TABLE transactions (
     wallet_id BIGINT NOT NULL,
     amount NUMERIC(19,2) NOT NULL,
     type VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_transaction_wallet
         FOREIGN KEY (wallet_id)
