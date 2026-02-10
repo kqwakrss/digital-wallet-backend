@@ -54,5 +54,8 @@ public class Wallet {
     public List<com.example.wallet.wallet_backend.domain.transaction.Transaction> getTransactions() {
         return transactions;
     }
+    public void setBalance(BigDecimal balance){
+        this.balance = balance;
+    }
 }
 
