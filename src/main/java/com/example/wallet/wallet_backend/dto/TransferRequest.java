@@ -18,13 +18,13 @@ public class TransferRequest {
     @DecimalMin(value = "0.01")
     private final BigDecimal amount;
 
-    public Long GetFromUserId(){
+    public Long getFromUserId(){
         return fromUserId;
     }
-    public Long GetToUserId(){
+    public Long getToUserId(){
         return toUserId;
     }
-    public BigDecimal GetAmount(){
+    public BigDecimal getAmount(){
         return amount;
     }
     public TransferRequest(BigDecimal amount, Long toUserId, Long fromUserId){
@@ -32,4 +32,5 @@ public class TransferRequest {
         this.toUserId = toUserId;
         this.fromUserId = fromUserId;
     }
+    
 }

@@ -6,7 +6,6 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 public class DepositRequest {
@@ -14,8 +13,7 @@ public class DepositRequest {
     private Long userId;
 
     @NotNull
-    @Positive
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.01", inclusive = true)
     private BigDecimal amount;
 
     @NotBlank

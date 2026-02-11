@@ -13,7 +13,7 @@ public class WalletService {
     public WalletService(WalletRepository walletRepository){
         this.walletRepository = walletRepository;
     }
-    public void deposit(BigDecimal amount, Long userId) {
+    public BigDecimal deposit(Long userId, BigDecimal amount) {
         var walletOptional = walletRepository.findByUserId(userId);
         if (walletOptional.isEmpty()){
             throw new RuntimeException("Wallet not found");
@@ -23,8 +23,10 @@ public class WalletService {
         }
         var wallet = walletOptional.get();
         wallet.setBalance(wallet.getBalance().add(amount));
+
+        return wallet.getBalance();
     }
-    public void withdraw(BigDecimal amount, Long userId, BigDecimal balance) {
+    public BigDecimal withdraw(Long userId, BigDecimal amount) {
         var walletOptional = walletRepository.findByUserId(userId);
         if (walletOptional.isEmpty()){
             throw new RuntimeException("Wallet not found");
@@ -38,11 +40,12 @@ public class WalletService {
             throw new RuntimeException("Not enough balance");
         }
         wallet.setBalance(wallet.getBalance().subtract(amount));
+
+        return wallet.getBalance();
+    }
+    public BigDecimal getBalance(Long userId){
+        var wallet = walletRepository.findByUserId(userId)
+            .orElseThrow(()-> new RuntimeException("wallet not found"));
+        return wallet.getBalance();
     }
 }
-// 1. знайти wallet по userId.
-// 2. якщо нема → помилка.
-// 3. перевірити amount > 0.
-// 4. змінити баланс
-// 5. створити transaction
-// 6. зберегти wallet і transaction
