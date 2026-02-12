@@ -8,12 +8,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import jakarta.validation.Valid;
+
 import com.example.wallet.wallet_backend.dto.DepositRequest;
 import com.example.wallet.wallet_backend.service.WalletService;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.GetMapping;
+
+import com.example.wallet.wallet_backend.dto.TransferRequest;
 
 
 @RestController
@@ -36,5 +41,11 @@ public class WalletController {
         BigDecimal balance = walletService.getBalance(userId);
         return ResponseEntity.ok(balance);
     }
+    @PostMapping("/transfer")
+    public ResponseEntity <Void> transfer(@Valid @RequestBody TransferRequest request) {
+        walletService.transfer(request);
+        return ResponseEntity.ok().build();
+    }
+    
     
 }
