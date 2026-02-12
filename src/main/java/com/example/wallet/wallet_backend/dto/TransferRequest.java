@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 
 public class TransferRequest {
     
@@ -14,8 +13,7 @@ public class TransferRequest {
     private final Long toUserId;
 
     @NotNull
-    @Positive
-    @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.01", inclusive = true)
     private final BigDecimal amount;
 
     public Long getFromUserId(){
@@ -27,10 +25,9 @@ public class TransferRequest {
     public BigDecimal getAmount(){
         return amount;
     }
-    public TransferRequest(BigDecimal amount, Long toUserId, Long fromUserId){
+    public TransferRequest(Long fromUserId, Long toUserId, BigDecimal amount){
         this.amount = amount;
         this.toUserId = toUserId;
         this.fromUserId = fromUserId;
     }
-    
 }
