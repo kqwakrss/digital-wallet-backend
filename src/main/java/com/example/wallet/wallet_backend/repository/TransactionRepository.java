@@ -1,5 +1,14 @@
 package com.example.wallet.wallet_backend.repository;
 
-public class TransactionRepository {
-    
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.wallet.wallet_backend.domain.transaction.Transaction;
+
+
+@Repository
+public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+    List<Transaction> findByWalletIdOrderByCreatedAtDesc(Long walletId );
 }

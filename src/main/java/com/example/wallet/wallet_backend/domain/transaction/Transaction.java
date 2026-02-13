@@ -47,19 +47,14 @@ public class Transaction {
         
     }
 
-    public void setAmount(BigDecimal amount){
-        this.amount = amount;
-    }
-
-    public void setWallet(Wallet wallet) {
+    public Transaction(Wallet wallet, 
+        BigDecimal amount,
+        TransactionType type,
+        TransactionStatus status
+    ){
         this.wallet = wallet;
-    }
-
-
-    public void setType(TransactionType type){
+        this.amount = amount;
         this.type = type;
-    }
-    public void setStatus(TransactionStatus status){
         this.status = status;
     }
 
