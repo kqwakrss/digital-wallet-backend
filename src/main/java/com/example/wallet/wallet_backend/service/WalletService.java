@@ -1,18 +1,20 @@
     package com.example.wallet.wallet_backend.service;
 
     import java.math.BigDecimal;
+    import java.util.Objects;
+
 
     import org.springframework.stereotype.Service;
 
-import com.example.wallet.wallet_backend.domain.transaction.Transaction;
-import com.example.wallet.wallet_backend.domain.transaction.TransactionStatus;
-import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
+    import com.example.wallet.wallet_backend.domain.transaction.Transaction;
+    import com.example.wallet.wallet_backend.domain.transaction.TransactionStatus;
+    import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
     import com.example.wallet.wallet_backend.domain.wallet.Wallet;
     import com.example.wallet.wallet_backend.dto.TransferRequest;
     import com.example.wallet.wallet_backend.repository.TransactionRepository;
     import com.example.wallet.wallet_backend.repository.WalletRepository;
+    import org.springframework.transaction.annotation.Transactional;
 
-    import jakarta.transaction.Transactional;
 
     @Service
     public class WalletService {
@@ -25,14 +27,11 @@ import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
         }
         @Transactional
         public BigDecimal deposit(Long userId, BigDecimal amount) {
-            var walletOptional = walletRepository.findByUserId(userId);
-            if (walletOptional.isEmpty()){
-                throw new RuntimeException("Wallet not found");
-            } 
-            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new RuntimeException("invalid amount");
-            }
-            var wallet = walletOptional.get();
+
+            validateAmount(amount);
+
+            Wallet wallet = getWalletOrThrow(userId);
+
             wallet.setBalance(wallet.getBalance().add(amount));
             
             Transaction transaction = new Transaction(
@@ -46,16 +45,13 @@ import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
 
             return wallet.getBalance();
         }
+
         @Transactional
         public BigDecimal withdraw(Long userId, BigDecimal amount) {
-            var walletOptional = walletRepository.findByUserId(userId);
-            if (walletOptional.isEmpty()){
-                throw new RuntimeException("Wallet not found");
-            }
-            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0){
-                throw new RuntimeException("invalid amount");
-            }
-            var wallet = walletOptional.get();
+
+            validateAmount(amount);
+
+            Wallet wallet = getWalletOrThrow(userId);
 
             if (wallet.getBalance().compareTo(amount) < 0){
                 throw new RuntimeException("Not enough balance");
@@ -73,28 +69,30 @@ import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
 
             return wallet.getBalance();
         }
+
+        @Transactional(readOnly = true)
         public BigDecimal getBalance(Long userId){
-            var wallet = walletRepository.findByUserId(userId)
-                .orElseThrow(()-> new RuntimeException("wallet not found"));
+            Wallet wallet = getWalletOrThrow(userId);
             return wallet.getBalance();
         }
+
         @Transactional
         public BigDecimal transfer(TransferRequest request){
-            Wallet fromWallet = walletRepository
-                .findByUserId(request.getFromUserId())
-                .orElseThrow(()-> new RuntimeException("Sender not found"));
-            if (request.getAmount() == null || request.getAmount().compareTo(BigDecimal.ZERO) <= 0){
-                throw new RuntimeException("amount must be bigger then 0");
-            }
 
-            if (request.getFromUserId().equals(request.getToUserId())){
-                throw new IllegalArgumentException("can't transfer to the same user");}
-            Wallet toWallet = walletRepository
-                .findByUserId(request.getToUserId())
-                .orElseThrow(()-> new RuntimeException("Receiver not found"));
-            if (fromWallet.getBalance().compareTo(request.getAmount()) < 0){
-                throw new RuntimeException("insufficient balance");
-            }
+            Long fromUserId = request.getFromUserId();
+            Long toUserId = request.getToUserId();
+
+            validateDifferentUsers(fromUserId, toUserId);
+
+            BigDecimal amount = request.getAmount();
+
+            validateAmount(amount);
+
+            Wallet fromWallet = getWalletOrThrow(fromUserId);
+            Wallet toWallet = getWalletOrThrow(toUserId);
+
+            validateSufficientBalance(fromWallet, amount);
+
             fromWallet.setBalance(fromWallet.getBalance().subtract(request.getAmount()));
             toWallet.setBalance(toWallet.getBalance().add(request.getAmount()));
 
@@ -115,5 +113,27 @@ import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
             transactionRepository.save(incoming);
 
             return fromWallet.getBalance();
+        }
+
+
+        private void validateAmount(BigDecimal amount){
+            if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0){
+                throw new RuntimeException("amount must be bigger then 0");
+            }
+        }
+        private Wallet getWalletOrThrow(Long userId) {
+            return walletRepository.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("Wallet not found"));
+
+        }
+        private void validateDifferentUsers(Long fromUserId, Long toUserId){
+            if (Objects.equals(fromUserId, toUserId)){
+                throw new IllegalArgumentException("can't transfer to the same user");
+            }
+        }
+        private void validateSufficientBalance(Wallet wallet, BigDecimal amount){
+            if (wallet.getBalance().compareTo(amount) < 0){
+                throw new RuntimeException("insufficient balance");
+            }
         }
     }

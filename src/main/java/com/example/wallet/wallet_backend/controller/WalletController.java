@@ -42,9 +42,9 @@ public class WalletController {
         return ResponseEntity.ok(balance);
     }
     @PostMapping("/transfer")
-    public ResponseEntity <Void> transfer(@Valid @RequestBody TransferRequest request) {
-        walletService.transfer(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity <BigDecimal> transfer(@Valid @RequestBody TransferRequest request) {
+        BigDecimal newBalance = walletService.transfer(request);
+        return ResponseEntity.ok(newBalance);
     }
     
     
