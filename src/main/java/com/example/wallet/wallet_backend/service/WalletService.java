@@ -13,6 +13,10 @@
     import com.example.wallet.wallet_backend.dto.TransferRequest;
     import com.example.wallet.wallet_backend.repository.TransactionRepository;
     import com.example.wallet.wallet_backend.repository.WalletRepository;
+    import com.example.wallet.wallet_backend.exception.walletException.WalletNotFoundException;
+    import com.example.wallet.wallet_backend.exception.transactionException.NotEnoughBalanceException;
+import com.example.wallet.wallet_backend.exception.transactionException.TransferToSameUserException;
+import com.example.wallet.wallet_backend.exception.common.InvalidAmountException;
     import org.springframework.transaction.annotation.Transactional;
 
 
@@ -54,7 +58,7 @@
             Wallet wallet = getWalletOrThrow(userId);
 
             if (wallet.getBalance().compareTo(amount) < 0){
-                throw new RuntimeException("Not enough balance");
+                throw new NotEnoughBalanceException(wallet.getBalance(), amount);
             }
             wallet.setBalance(wallet.getBalance().subtract(amount));
 
@@ -118,22 +122,22 @@
 
         private void validateAmount(BigDecimal amount){
             if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0){
-                throw new RuntimeException("amount must be bigger then 0");
+                throw new InvalidAmountException(amount);
             }
         }
         private Wallet getWalletOrThrow(Long userId) {
             return walletRepository.findByUserId(userId)
-                    .orElseThrow(() -> new RuntimeException("Wallet not found"));
+                    .orElseThrow(() -> new WalletNotFoundException(userId));
 
         }
         private void validateDifferentUsers(Long fromUserId, Long toUserId){
             if (Objects.equals(fromUserId, toUserId)){
-                throw new IllegalArgumentException("can't transfer to the same user");
+                throw new TransferToSameUserException(fromUserId);
             }
         }
         private void validateSufficientBalance(Wallet wallet, BigDecimal amount){
             if (wallet.getBalance().compareTo(amount) < 0){
-                throw new RuntimeException("insufficient balance");
+                throw new NotEnoughBalanceException(wallet.getBalance(),amount);
             }
         }
     }
