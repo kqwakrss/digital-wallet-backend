@@ -6,13 +6,14 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.wallet.wallet_backend.exception.walletException.WalletNotFoundException;
+import com.example.wallet.wallet_backend.exception.common.InvalidAmountException;
 import com.example.wallet.wallet_backend.exception.transactionException.NotEnoughBalanceException;
 import com.example.wallet.wallet_backend.exception.transactionException.TransferToSameUserException;
-import com.example.wallet.wallet_backend.exception.common.InvalidAmountException;
+import com.example.wallet.wallet_backend.exception.walletException.WalletNotFoundException;
 
 
 
@@ -68,5 +69,15 @@ public class GlobalExceptionHandler {
         body.put("userId", ex.getFromUserId());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<Object> handleOptimisticLock(ObjectOptimisticLockingFailureException ex){
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.CONFLICT.value());
+        body.put("error", "Wallet was modified by another transaction. Please retry.");
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
     }
 }
