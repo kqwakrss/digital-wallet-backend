@@ -3,22 +3,22 @@
     import java.math.BigDecimal;
     import java.util.Objects;
 
-
     import org.springframework.stereotype.Service;
+    import org.springframework.transaction.annotation.Transactional;
 
     import com.example.wallet.wallet_backend.domain.transaction.Transaction;
     import com.example.wallet.wallet_backend.domain.transaction.TransactionStatus;
     import com.example.wallet.wallet_backend.domain.transaction.TransactionType;
     import com.example.wallet.wallet_backend.domain.wallet.Wallet;
     import com.example.wallet.wallet_backend.dto.TransferRequest;
+    import com.example.wallet.wallet_backend.exception.common.InvalidAmountException;
+    import com.example.wallet.wallet_backend.exception.transactionException.NotEnoughBalanceException;
+    import com.example.wallet.wallet_backend.exception.transactionException.TransferToSameUserException;
+    import com.example.wallet.wallet_backend.exception.walletException.WalletNotFoundException;
     import com.example.wallet.wallet_backend.repository.TransactionRepository;
     import com.example.wallet.wallet_backend.repository.WalletRepository;
-    import com.example.wallet.wallet_backend.exception.walletException.WalletNotFoundException;
-    import com.example.wallet.wallet_backend.exception.transactionException.NotEnoughBalanceException;
-import com.example.wallet.wallet_backend.exception.transactionException.TransferToSameUserException;
-import com.example.wallet.wallet_backend.exception.common.InvalidAmountException;
-    import org.springframework.transaction.annotation.Transactional;
-
+    import org.springframework.data.domain.Page;
+    import org.springframework.data.domain.Pageable;
 
     @Service
     public class WalletService {
@@ -29,6 +29,12 @@ import com.example.wallet.wallet_backend.exception.common.InvalidAmountException
             this.walletRepository = walletRepository;
             this.transactionRepository = transactionRepository;
         }
+        @Transactional(readOnly = true)
+        public Page<Transaction> getWalletTransactions(Long walletId, Pageable pageable){
+            return transactionRepository.findByWalletId(walletId, pageable);
+        }
+
+        
         @Transactional
         public BigDecimal deposit(Long userId, BigDecimal amount) {
 
