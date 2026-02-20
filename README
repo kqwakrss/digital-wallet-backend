@@ -1,0 +1,104 @@
+# Digital Wallet Backend
+
+Backend application for managing digital wallet accounts and user operations.  
+Built using Spring Boot, PostgreSQL, and Docker.
+
+---
+
+## Tech Stack
+
+- Java 21
+- Spring Boot
+- Spring Data JPA
+- Hibernate
+- PostgreSQL
+- Docker
+- Maven
+- REST API
+- Linux
+
+---
+
+## Features
+
+- REST API for managing users and wallets
+- Create and retrieve wallet accounts
+- Database integration using PostgreSQL
+- Entity relationships using JPA and Hibernate
+- Layered architecture (Controller, Service, Repository)
+- Exception handling with proper HTTP responses
+- Docker container support
+
+---
+
+## Architecture
+
+Project uses standard backend layered architecture:
+
+```
+Controller → Service → Repository → Database
+```
+
+- Controller — handles HTTP requests
+- Service — business logic
+- Repository — database access
+- Entity — database models
+
+---
+
+## Example Endpoints
+
+```
+GET     /api/users
+POST    /api/users
+
+GET     /api/wallets
+POST    /api/wallets
+```
+
+---
+
+## How to Run
+
+### Run locally
+
+Requirements:
+
+- Java 21+
+- PostgreSQL
+- Maven
+
+```
+git clone https://github.com/kqwakrss/digital-wallet-backend.git
+cd digital-wallet-backend
+./mvnw spring-boot:run
+```
+
+---
+
+### Run with Docker
+
+```
+docker build -t digital-wallet-backend .
+docker run -p 8080:8080 digital-wallet-backend
+```
+
+---
+
+## What I Learned
+
+- Building REST APIs using Spring Boot
+- Designing backend architecture
+- Working with PostgreSQL and JPA
+- Docker containerization
+- Backend layering and clean structure
+
+---
+
+## Author
+
+Maksym Rytchenko  
+Junior Java Backend Developer  
+
+GitHub: https://github.com/kqwakrss  
+LinkedIn: https://www.linkedin.com/in/maksym-rytchenko-13b0ab397/
